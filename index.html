@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terraflow</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+
+  <!-- ── NAV ── -->
+  <nav class="nav">
+    <div class="nav-left">
+      <div class="logo">
+        <div class="logo-mark"></div>
+        <span class="logo-text">Terraflow</span>
+        <span class="logo-farm">/ Ushindi Farm</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span>Live · 5s refresh</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="badge badge-green" id="zones-badge">2 zones active</span>
+      <span class="badge badge-gray" id="clock-badge">--:--:--</span>
+    </div>
+  </nav>
+
+  <div class="dash-body">
+
+    <!-- ── OVERVIEW METRICS ── -->
+    <section>
+      <div class="section-header">
+        <span class="section-title">Overview</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card" id="m-moisture">
+          <div class="metric-label">Avg soil moisture</div>
+          <div class="metric-value" id="val-moisture">64<span class="unit">%</span></div>
+          <div class="metric-status status-good"><span class="status-dot"></span><span id="lbl-moisture">Optimal range</span></div>
+        </div>
+        <div class="metric-card" id="m-temp">
+          <div class="metric-label">Avg temperature</div>
+          <div class="metric-value" id="val-temp">27<span class="unit">°C</span></div>
+          <div class="metric-status status-good"><span class="status-dot"></span><span id="lbl-temp">Normal</span></div>
+        </div>
+        <div class="metric-card is-warn" id="m-sprinklers">
+          <div class="metric-label">Sprinklers active</div>
+          <div class="metric-value" id="val-sprinklers">1<span class="unit">/2</span></div>
+          <div class="metric-status status-warn"><span class="status-dot"></span><span id="lbl-sprinklers">Zone 1 running</span></div>
+        </div>
+        <div class="metric-card is-info" id="m-reading">
+          <div class="metric-label">Last reading</div>
+          <div class="metric-value" id="val-reading" style="font-size:20px;padding-top:4px;">just now</div>
+          <div class="metric-status status-good"><span class="status-dot"></span>System healthy</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CHARTS ── -->
+    <section>
+      <div class="section-header">
+        <span class="section-title">Sensor readings</span>
+      </div>
+      <div class="charts-grid">
+        <div class="card">
+          <div class="card-title">Soil moisture — zone 1 &amp; 2</div>
+          <div class="chart-canvas-wrap">
+            <canvas id="chart-moisture"></canvas>
+          </div>
+          <div class="chart-meta">Last 10 readings · dashed = 30% auto-trigger threshold</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Temperature — zone 1</div>
+          <div class="chart-canvas-wrap">
+            <canvas id="chart-temp"></canvas>
+          </div>
+          <div class="chart-meta">Last 10 readings</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WEATHER ── -->
+    <section>
+      <div class="section-header">
+        <span class="section-title">Weather &amp; location</span>
+      </div>
+      <div class="weather-section">
+        <div class="weather-inner">
+
+          <div>
+            <div class="location-row">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0">
+                <circle cx="7" cy="6" r="2.5" stroke="#2adf8e" stroke-width="1.2"/>
+                <path d="M7 1C4.24 1 2 3.24 2 6c0 3.5 5 7 5 7s5-3.5 5-7c0-2.76-2.24-5-5-5z" stroke="#2adf8e" stroke-width="1.2" fill="none"/>
+              </svg>
+              <input class="location-input" type="text" value="Kiambu, Kenya" placeholder="Enter location…"/>
+              <button class="location-btn" onclick="refreshWeather()">Get weather</button>
+            </div>
+
+            <div class="weather-stats">
+              <div class="weather-stat">
+                <div class="weather-stat-label">Condition</div>
+                <div class="weather-stat-value" style="font-size:13px;">Partly cloudy</div>
+              </div>
+              <div class="weather-stat">
+                <div class="weather-stat-label">Temp</div>
+                <div class="weather-stat-value">24<span class="unit">°C</span></div>
+              </div>
+              <div class="weather-stat">
+                <div class="weather-stat-label">Humidity</div>
+                <div class="weather-stat-value">68<span class="unit">%</span></div>
+              </div>
+              <div class="weather-stat">
+                <div class="weather-stat-label">Rain chance</div>
+                <div class="weather-stat-value" style="color:var(--blue)">12<span class="unit">%</span></div>
+              </div>
+            </div>
+
+            <div class="forecast-label">5-day forecast</div>
+            <div class="forecast-row">
+              <div class="forecast-card">
+                <div class="forecast-day">Today</div>
+                <div class="forecast-icon">☀️</div>
+                <div class="forecast-temp">24°</div>
+                <div class="forecast-rain">12%</div>
+              </div>
+              <div class="forecast-card">
+                <div class="forecast-day">Thu</div>
+                <div class="forecast-icon">⛅</div>
+                <div class="forecast-temp">22°</div>
+                <div class="forecast-rain">45%</div>
+              </div>
+              <div class="forecast-card">
+                <div class="forecast-day">Fri</div>
+                <div class="forecast-icon">🌧️</div>
+                <div class="forecast-temp">19°</div>
+                <div class="forecast-rain">80%</div>
+              </div>
+              <div class="forecast-card">
+                <div class="forecast-day">Sat</div>
+                <div class="forecast-icon">🌦️</div>
+                <div class="forecast-temp">20°</div>
+                <div class="forecast-rain">60%</div>
+              </div>
+              <div class="forecast-card">
+                <div class="forecast-day">Sun</div>
+                <div class="forecast-icon">☀️</div>
+                <div class="forecast-temp">26°</div>
+                <div class="forecast-rain">8%</div>
+              </div>
+            </div>
+
+            <div class="decision-banner hold" id="decision-banner">
+              <div class="decision-title" id="decision-title">Irrigation held — rain forecast in 36h</div>
+              <div class="decision-sub" id="decision-sub">System overriding auto-trigger to conserve water · Friday 80% rain probability</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="map-label-row">Farm location — Kiambu, Kenya</div>
+            <div class="map-placeholder">
+              <div class="map-grid-line h" style="top:25%"></div>
+              <div class="map-grid-line h" style="top:50%"></div>
+              <div class="map-grid-line h" style="top:75%"></div>
+              <div class="map-grid-line v" style="left:25%"></div>
+              <div class="map-grid-line v" style="left:50%"></div>
+              <div class="map-grid-line v" style="left:75%"></div>
+              <div class="map-ring" style="width:42px;height:42px"></div>
+              <div class="map-ring" style="width:68px;height:68px;opacity:0.3;animation-delay:1s"></div>
+              <div class="map-pin"></div>
+              <div class="map-chip">Ushindi Farm · zone 1 &amp; 2</div>
+            </div>
+            <div class="map-coords">Lat −1.0833 · Lng 36.9167 · 1645m elevation</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BOTTOM ROW ── -->
+    <section>
+      <div class="section-header">
+        <span class="section-title">Zone control &amp; simulation</span>
+      </div>
+      <div class="bottom-grid">
+
+        <!-- Zone control -->
+        <div class="card">
+          <div class="card-title">Zone control</div>
+          <div class="zone-list">
+            <div class="zone-row">
+              <div class="zone-info">
+                <span class="zone-name">Zone 1</span>
+                <span class="zone-meta" id="z1-meta">28% · 27°C · auto ON</span>
+              </div>
+              <button class="toggle-btn on" id="btn-z1" onclick="toggleZone(1)">ON</button>
+            </div>
+            <div class="zone-row">
+              <div class="zone-info">
+                <span class="zone-name">Zone 2</span>
+                <span class="zone-meta" id="z2-meta">64% · 26°C · auto OFF</span>
+              </div>
+              <button class="toggle-btn off" id="btn-z2" onclick="toggleZone(2)">OFF</button>
+            </div>
+          </div>
+          <div class="moisture-bars">
+            <div class="bar-row">
+              <div class="bar-header">
+                <span>Zone 1 moisture</span>
+                <span class="bar-value-danger" id="bar-val-z1">28%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill danger" id="bar-fill-z1" style="width:28%"></div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-header">
+                <span>Zone 2 moisture</span>
+                <span class="bar-value-good" id="bar-val-z2">64%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill good" id="bar-fill-z2" style="width:64%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Anomaly injection -->
+        <div class="card">
+          <div class="card-title">Inject anomaly</div>
+          <p class="anomaly-desc">Simulate extreme conditions to test how the system responds.</p>
+          <button class="anomaly-btn drought" onclick="injectAnomaly('drought')">
+            <div class="anomaly-dot drought"></div>
+            <div>
+              <div class="anomaly-btn-title">Drought</div>
+              <div class="anomaly-btn-sub">5% moisture · 42°C · sprinkler ON</div>
+            </div>
+          </button>
+          <button class="anomaly-btn flood" onclick="injectAnomaly('flood')">
+            <div class="anomaly-dot flood"></div>
+            <div>
+              <div class="anomaly-btn-title">Flood</div>
+              <div class="anomaly-btn-sub">95% moisture · 18°C · sprinkler OFF</div>
+            </div>
+          </button>
+          <select class="zone-select" id="anomaly-zone">
+            <option value="1">Zone 1</option>
+            <option value="2">Zone 2</option>
+            <option value="all">All zones</option>
+          </select>
+        </div>
+
+        <!-- Activity log -->
+        <div class="card">
+          <div class="card-title">Activity log</div>
+          <div class="log-list" id="activity-log">
+            <div class="log-row">
+              <div class="log-time">14:32</div>
+              <div class="log-text">Zone 1 sprinkler ON — moisture 28%<span class="tag tag-auto">auto</span></div>
+            </div>
+            <div class="log-row">
+              <div class="log-time">14:27</div>
+              <div class="log-text">Zone 2 OFF — moisture 64%<span class="tag tag-auto">auto</span></div>
+            </div>
+            <div class="log-row">
+              <div class="log-time">14:20</div>
+              <div class="log-text">Manual override: Zone 1 forced OFF<span class="tag tag-manual">manual</span></div>
+            </div>
+            <div class="log-row">
+              <div class="log-time">14:11</div>
+              <div class="log-text">Drought injected — Zone 2<span class="tag tag-anomaly">anomaly</span></div>
+            </div>
+            <div class="log-row">
+              <div class="log-time">14:05</div>
+              <div class="log-text">Irrigation held — rain forecast 80%<span class="tag tag-weather">weather</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toasts"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="style.js"></script>
+<script>
+  // Auto-load weather for default location on startup
+  refreshWeather();
+</script>
+</body>
+</html>
+
