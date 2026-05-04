@@ -81,7 +81,6 @@ app.get('/api/telemetry', async (req, res) => {
   }
 });
 
-// GET /api/weather
 // Sets the system location, grabs coordinates, and fetches rain probability
 // Query param: ?city=Nairobi
 app.get('/api/weather', async (req, res) => {

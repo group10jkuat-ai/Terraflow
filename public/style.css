@@ -1,8 +1,4 @@
 
-
-/* ============================================================
-   CSS CUSTOM PROPERTIES (design tokens)
-   ============================================================ */
 :root {
   --bg-base:        #0b0f0e;
   --bg-surface:     #111815;
@@ -43,9 +39,6 @@
   --transition: 0.18s ease;
 }
 
-/* ============================================================
-   BASE RESET & BODY
-   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -58,16 +51,12 @@ body {
   line-height: 1.5;
 }
 
-/* ============================================================
-   SCROLLBAR
-   ============================================================ */
+/* SCROLLBAR */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 99px; }
 
-/* ============================================================
-   LAYOUT — dashboard shell
-   ============================================================ */
+/* LAYOUT — dashboard shell */
 .dashboard {
   max-width: 1280px;
   margin: 0 auto;
@@ -81,9 +70,7 @@ body {
   box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(42,223,142,0.04);
 }
 
-/* ============================================================
-   NAV BAR
-   ============================================================ */
+/* NAV BAR*/
 .nav {
   display: flex;
   align-items: center;
@@ -192,9 +179,7 @@ body {
 .badge-red   { background: var(--red-dim); color: var(--red); border: 1px solid rgba(224,80,80,0.2); }
 .badge-blue  { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,166,245,0.2); }
 
-/* ============================================================
-   BODY / CONTENT AREA
-   ============================================================ */
+/* BODY /  */
 .dash-body {
   padding: 20px 24px 28px;
   display: flex;
@@ -202,9 +187,7 @@ body {
   gap: 20px;
 }
 
-/* ============================================================
-   SECTION HEADERS
-   ============================================================ */
+/* SECTION HEADERS*/
 .section-header {
   display: flex;
   align-items: center;
@@ -221,9 +204,7 @@ body {
   font-family: var(--font-mono);
 }
 
-/* ============================================================
-   CARD BASE
-   ============================================================ */
+/* CARD BASE */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -559,6 +540,166 @@ body {
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 10px var(--green-bright);
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE — 768px and below
+   ============================================================ */
+@media (max-width: 768px) {
+
+  body {
+    padding: 12px;
+  }
+
+  .dashboard {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+
+.metric-label {
+  font-size: 9px;
+  white-space: normal;
+  word-break: break-word;
+}  
+/* ── Nav ── */
+ .nav {
+  padding: 10px 14px;
+  flex-wrap: nowrap;  /* was: wrap */
+  gap: 8px;
+}
+
+  .nav-left {
+    gap: 10px;
+  }
+
+  .logo-farm {
+    display: none; /* hide "/ Ushindi Farm" on small screens */
+  }
+
+  .live-indicator span {
+    display: none; /* hide "Live · 5s refresh" text, keep dot */
+  }
+
+  /* ── Metrics — stack 2x2 ── */
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .metric-value {
+    font-size: 22px;
+  }
+
+  /* ── Charts — stack vertically ── */
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* ── Weather — stack vertically ── */
+  .weather-inner {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .weather-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .forecast-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .forecast-card {
+    padding: 6px 4px;
+  }
+
+  .forecast-day  { font-size: 8px; }
+  .forecast-icon { font-size: 14px; }
+  .forecast-temp { font-size: 11px; }
+  .forecast-rain { font-size: 9px; }
+
+  /* ── Bottom grid — stack vertically ── */
+  .bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* ── Zone rows — fix wrapping ── */
+  .zone-row {
+    padding: 10px 12px;
+  }
+
+  .zone-name { font-size: 13px; }
+  .zone-meta { font-size: 11px; }
+
+  /* ── Map placeholder — reduce height ── */
+  .map-placeholder {
+    height: 120px;
+  }
+
+  /* ── Weather section padding ── */
+  .weather-section {
+    padding: 14px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    padding: 14px;
+  }
+
+  /* ── Location row ── */
+  .location-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .location-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .location-btn {
+    width: 100%;
+  }
+
+  /* ── Toast — full width on mobile ── */
+  .toast-container {
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .toast {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   VERY SMALL SCREENS — 380px and below (e.g. older phones)
+   ============================================================ */
+@media (max-width: 380px) {
+
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .metric-value {
+    font-size: 20px;
+  }
+
+  .weather-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .forecast-row {
+    grid-template-columns: repeat(3, 1fr); /* show 3 days, scroll for rest */
+    overflow-x: auto;
+  }
 }
 
 .map-chip {
