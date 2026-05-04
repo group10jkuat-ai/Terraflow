@@ -144,8 +144,8 @@ async function fetchRealData() {
     // Fetch the latest readings for both zones from Gitau's backend
     // More efficient
 const [z1Data, z2Data] = await Promise.all([
-  fetch('http://localhost:5000/api/telemetry?zone=zone_1').then(r => r.json()),
-  fetch('http://localhost:5000/api/telemetry?zone=zone_2').then(r => r.json())
+  fetch('/api/telemetry?zone=zone_1').then(r => r.json()),
+  fetch('/api/telemetry?zone=zone_2').then(r => r.json())
 ]);
 
     if (z1Data.length > 0) {
@@ -278,7 +278,7 @@ async function toggleZone(z) {
   const newState = !currentState; // Flip the switch
   
   try {
-      await fetch('http://localhost:5000/api/sprinkler/override', {
+      await fetch('/api/sprinkler/override', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ zone: zoneName, state: newState })
@@ -305,7 +305,7 @@ async function injectAnomaly(type) {
 
   try {
       for (let z of zonesToUpdate) {
-          await fetch('http://localhost:5000/api/simulate/anomaly', {
+          await fetch('/api/simulate/anomaly', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ zone: `zone_${z}`, type: type })
@@ -349,7 +349,7 @@ async function refreshWeather() {
   showToast(`Locating ${cityInput}...`, 'gray');
 
   try {
-    const response = await fetch(`http://localhost:5000/api/weather?city=${encodeURIComponent(cityInput)}`);
+    const response = await fetch(`/api/weather?city=${encodeURIComponent(cityInput)}`);
     const data = await response.json();
 
     if (!response.ok) {
