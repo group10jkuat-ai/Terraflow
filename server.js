@@ -1,10 +1,12 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Telemetry = require('./models/Telemetry');
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use(cors());
@@ -98,7 +100,7 @@ app.get('/api/weather', async (req, res) => {
     const lat = geoData.results[0].latitude;
     const long = geoData.results[0].longitude;
 
-    // Expanded weather request — now asks for current + 5-day forecast
+    // 5-day weather forecast
     const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m,relative_humidity_2m,precipitation_probability,weathercode&daily=temperature_2m_max,precipitation_probability_max,weathercode&timezone=Africa%2FNairobi&forecast_days=5`;
 
     const weatherResponse = await fetch(weatherUrl);
@@ -280,6 +282,10 @@ app.post('/api/simulate/anomaly', async (req, res) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
+app.get('/{*splat}', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`Terraflow backend running on port ${PORT}`);
 });
