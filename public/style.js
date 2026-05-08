@@ -1,6 +1,4 @@
-/* ============================================================
-   STATE
-   ============================================================ */
+
 const state = {
   zones: {
     1: { moisture: 28, temp: 27, sprinkler: true,  manual: false },
@@ -14,9 +12,6 @@ const state = {
   secondsAgo: 0
 };
 
-/* ============================================================
-   CLOCK
-   ============================================================ */
 function updateClock() {
   const now = new Date();
   const h = String(now.getHours()).padStart(2,'0');
@@ -27,9 +22,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-/* ============================================================
-   CHARTS
-   ============================================================ */
+
 const chartDefaults = {
   responsive: true,
   maintainAspectRatio: false,
@@ -133,16 +126,10 @@ const tempChart = new Chart(document.getElementById('chart-temp'), {
   }
 });
 
-/* ============================================================
-   DATA SIMULATION (every 5s)
-   ============================================================ */
-// ============================================================
-// REAL DATA FETCHING (Replaces simulateTick)
-// ============================================================
+
 async function fetchRealData() {
   try {
-    // Fetch the latest readings for both zones from Gitau's backend
-    // More efficient
+    
 const [z1Data, z2Data] = await Promise.all([
   fetch('/api/telemetry?zone=zone_1').then(r => r.json()),
   fetch('/api/telemetry?zone=zone_2').then(r => r.json())
@@ -178,14 +165,12 @@ const [z1Data, z2Data] = await Promise.all([
   }
 }
 
-/* ============================================================
-   UI UPDATE
-   ============================================================ */
+
 function updateUI() {
   const z1 = state.zones[1];
   const z2 = state.zones[2];
 
-  // Metrics
+  
   const avgMoisture = Math.round((z1.moisture + z2.moisture) / 2);
   const avgTemp     = Math.round((z1.temp + z2.temp) / 2);
   const activeSprinklers = (z1.sprinkler ? 1 : 0) + (z2.sprinkler ? 1 : 0);
@@ -210,26 +195,26 @@ function updateUI() {
     activeSprinklers === 1 ? ['warn','is-warn', activeSprinklersLabel()] :
                              ['good','','All zones off']);
 
-  // Zone meta
+  
   document.getElementById('z1-meta').textContent = `${z1.moisture}% · ${z1.temp}°C · ${z1.manual ? 'manual' : 'auto'} ${z1.sprinkler ? 'ON' : 'OFF'}`;
   document.getElementById('z2-meta').textContent = `${z2.moisture}% · ${z2.temp}°C · ${z2.manual ? 'manual' : 'auto'} ${z2.sprinkler ? 'ON' : 'OFF'}`;
 
-  // Toggle buttons
+  
   setToggleBtn('btn-z1', z1.sprinkler);
   setToggleBtn('btn-z2', z2.sprinkler);
 
-  // Moisture bars
+  
   updateBar('bar-fill-z1', 'bar-val-z1', z1.moisture);
   updateBar('bar-fill-z2', 'bar-val-z2', z2.moisture);
 
-  // Charts
+  
   moistureChart.data.datasets[0].data = [...state.moistureHistory[1]];
   moistureChart.data.datasets[1].data = [...state.moistureHistory[2]];
   moistureChart.update('none');
   tempChart.data.datasets[0].data = [...state.tempHistory];
   tempChart.update('none');
 
-  // Zones badge
+  
   document.getElementById('zones-badge').textContent = activeSprinklers + ' zone' + (activeSprinklers !== 1 ? 's' : '') + ' active';
 }
 
@@ -244,11 +229,11 @@ function setMetricStatus(cardId, lblId, [type, cardClass, text]) {
   const lbl  = document.getElementById(lblId);
   const statusEl = card.querySelector('.metric-status');
 
-  // Reset card class
+  
   card.classList.remove('is-danger','is-warn','is-info');
   if (cardClass) card.classList.add(cardClass);
 
-  // Reset status class
+  
   statusEl.className = 'metric-status status-' + type;
   lbl.textContent = text;
 }
@@ -268,9 +253,7 @@ function updateBar(fillId, valId, pct) {
   val.textContent = pct + '%';
 }
 
-/* ============================================================
-   ZONE TOGGLE
-   ============================================================ */
+
 
 async function toggleZone(z) {
   const zoneName = `zone_${z}`;
@@ -296,9 +279,7 @@ async function toggleZone(z) {
   }
 }
 
-/* ============================================================
-   ANOMALY INJECTION (Connected to Backend)
-   ============================================================ */
+
 async function injectAnomaly(type) {
   const zoneVal = document.getElementById('anomaly-zone').value;
   const zonesToUpdate = zoneVal === 'all' ? [1, 2] : [parseInt(zoneVal)];
@@ -322,9 +303,7 @@ async function injectAnomaly(type) {
   }
 }
 
-/* ============================================================
-   ACTIVITY LOG
-   ============================================================ */
+
 function addLog(text, tagType) {
   const log  = document.getElementById('activity-log');
   const now  = new Date();
@@ -337,13 +316,11 @@ function addLog(text, tagType) {
 
   log.insertBefore(row, log.firstChild);
 
-  // Keep max 8 entries
+  
   while (log.children.length > 8) log.removeChild(log.lastChild);
 }
 
-/* ============================================================
-   WEATHER REFRESH (Connected to Backend)
-   ============================================================ */
+
 async function refreshWeather() {
   const cityInput = document.querySelector('.location-input').value;
   showToast(`Locating ${cityInput}...`, 'gray');
@@ -357,13 +334,13 @@ async function refreshWeather() {
       return;
     }
 
-    // ── Update the 4 current condition stat boxes ──
+    
     updateWeatherStats(data.current);
 
-    // ── Update the 5-day forecast cards ──
+  
     updateForecastCards(data.forecast);
 
-    // ── Update the decision banner — unchanged logic ──
+
     const banner = document.getElementById('decision-banner');
     const title  = document.getElementById('decision-title');
     const sub    = document.getElementById('decision-sub');
@@ -386,9 +363,9 @@ async function refreshWeather() {
 }
 
 function updateWeatherStats(current) {
-  // Targets the 4 .weather-stat-value elements by their position
+  
   const stats = document.querySelectorAll('.weather-stat-value');
-  // index 0 = Condition, 1 = Temp, 2 = Humidity, 3 = Rain chance
+  
   stats[0].textContent = current.condition;
   stats[1].innerHTML   = `${current.temperature}<span class="unit">°C</span>`;
   stats[2].innerHTML   = `${current.humidity}<span class="unit">%</span>`;
@@ -405,9 +382,7 @@ function updateForecastCards(forecast) {
     cards[i].querySelector('.forecast-rain').textContent = `${day.rain}%`;
   });
 }
-/* ============================================================
-   TOAST
-   ============================================================ */
+
 function showToast(text, color) {
   const colorMap = {
     green: '#2adf8e', blue: '#4da6f5',
@@ -427,9 +402,6 @@ function showToast(text, color) {
   }, 2800);
 }
 
-/* ============================================================
-   LAST READING COUNTER
-   ============================================================ */
 setInterval(() => {
   state.secondsAgo++;
   const el = document.getElementById('val-reading');
@@ -440,8 +412,6 @@ setInterval(() => {
   }
 }, 1000);
 
-/* ============================================================
-   START SIMULATION
-   ============================================================ */
+
 updateUI();
 setInterval(fetchRealData, 5000);

@@ -665,6 +665,26 @@ body {
   .location-btn {
     width: 100%;
   }
+  /* ── Fix Activity Log & Button Overflow ── */
+  .log-text {
+    min-width: 0; /* The magic fix: forces the flex item to shrink */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  .tag {
+    margin-top: 4px; /* Gives the tag breathing room if it drops to a new line */
+  }
+
+  /* Apply the same fix to the anomaly buttons just in case */
+  .anomaly-btn > div {
+    min-width: 0; 
+  }
+  
+  .anomaly-btn-sub {
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
 
   /* ── Toast — full width on mobile ── */
   .toast-container {

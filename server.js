@@ -36,12 +36,12 @@ const interval = setInterval(async () => {
 
     let sprinklerState = false;
 
-// Only consider watering if the soil is dry (< 30%)
+
 if (randomMoisture < 30) {
-  // If a massive storm is coming, keep sprinklers OFF to save water
+  
   if (systemWeather.rain_probability > 60) {
   sprinklerState = false;
-  sourceTag = 'weather_hold';  // ← now the record explains itself
+  sourceTag = 'weather_hold';  
 } else {
   sprinklerState = true;
   sourceTag = 'auto_generated';
@@ -81,13 +81,12 @@ app.get('/api/telemetry', async (req, res) => {
   }
 });
 
-// Sets the system location, grabs coordinates, and fetches rain probability
-// Query param: ?city=Nairobi
+
 app.get('/api/weather', async (req, res) => {
   const cityName = req.query.city || systemWeather.location;
 
   try {
-    // Geocoding — unchanged
+    
     const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`;
     const geoResponse = await fetch(geoUrl);
     const geoData = await geoResponse.json();
@@ -99,25 +98,25 @@ app.get('/api/weather', async (req, res) => {
     const lat = geoData.results[0].latitude;
     const long = geoData.results[0].longitude;
 
-    // 5-day weather forecast
+    
     const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m,relative_humidity_2m,precipitation_probability,weathercode&daily=temperature_2m_max,precipitation_probability_max,weathercode&timezone=Africa%2FNairobi&forecast_days=5`;
 
     const weatherResponse = await fetch(weatherUrl);
     const weatherData = await weatherResponse.json();
 
-    // Current conditions
+    
     const currentTemp      = Math.round(weatherData.current.temperature_2m);
     const currentHumidity  = weatherData.current.relative_humidity_2m;
     const currentRainChance= weatherData.current.precipitation_probability;
     const currentCode      = weatherData.current.weathercode;
 
-    // 5-day forecast arrays
-    const forecastDays     = weatherData.daily.time;                         // ["2026-05-02", ...]
-    const forecastTemps    = weatherData.daily.temperature_2m_max;           // [24, 22, 19, 20, 26]
-    const forecastRain     = weatherData.daily.precipitation_probability_max;// [12, 45, 80, 60, 8]
-    const forecastCodes    = weatherData.daily.weathercode;                  // [1, 3, 61, 80, 0]
+    
+    const forecastDays     = weatherData.daily.time;                         
+    const forecastTemps    = weatherData.daily.temperature_2m_max;           
+    const forecastRain     = weatherData.daily.precipitation_probability_max;
+    const forecastCodes    = weatherData.daily.weathercode;                  
 
-    // Tomorrow's rain chance drives the irrigation logic — unchanged
+    
     const tomorrowRain = forecastRain[1];
     systemWeather.location = cityName;
     systemWeather.rain_probability = tomorrowRain;
@@ -127,7 +126,7 @@ app.get('/api/weather', async (req, res) => {
       location: cityName,
       coordinates: { lat, long },
 
-      // Current conditions — for the 4 stat boxes
+      
       current: {
         temperature: currentTemp,
         humidity: currentHumidity,
@@ -135,7 +134,7 @@ app.get('/api/weather', async (req, res) => {
         condition: getConditionLabel(currentCode)
       },
 
-      // 5-day forecast — for the forecast cards
+      
       forecast: forecastDays.map((date, i) => ({
         date,
         day: getDayLabel(date, i),
@@ -144,7 +143,7 @@ app.get('/api/weather', async (req, res) => {
         icon: getWeatherIcon(forecastCodes[i])
       })),
 
-      // Used by the decision banner and irrigation logic
+      
       rain_probability_percent: tomorrowRain,
       system_status: tomorrowRain > 60
         ? "Rain expected. Sprinklers paused."
@@ -187,7 +186,7 @@ function getWeatherIcon(code) {
 function getDayLabel(dateStr, index) {
   if (index === 0) return 'Today';
   const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { weekday: 'short' }); // "Mon", "Tue"...
+  return date.toLocaleDateString('en-GB', { weekday: 'short' }); 
 }
 
 app.post('/api/sprinkler/override', async (req, res) => {
@@ -214,8 +213,8 @@ app.post('/api/sprinkler/override', async (req, res) => {
       sensor_id: zone,
       soil_moisture_percent: lastReading?.soil_moisture_percent ?? 50,
       temperature_celsius: lastReading?.temperature_celsius ?? 25,
-      is_sprinkler_active: state,  // 👈 this is the override
-      source: 'manual_override'    // flags this record as a manual action
+      is_sprinkler_active: state,  
+      source: 'manual_override'    
     });
 
     res.status(201).json({
@@ -245,14 +244,14 @@ app.post('/api/simulate/anomaly', async (req, res) => {
   
   const anomalyProfiles = {
     drought: {
-      soil_moisture_percent: 5,   // critically dry
-      temperature_celsius: 42,    // extreme heat
-      is_sprinkler_active: true,  // system kicks in automatically
+      soil_moisture_percent: 5,   
+      temperature_celsius: 42,    
+      is_sprinkler_active: true,  
     },
     flood: {
-      soil_moisture_percent: 95,  // waterlogged
-      temperature_celsius: 18,    // cool and wet
-      is_sprinkler_active: false, // no irrigation needed
+      soil_moisture_percent: 95,  
+      temperature_celsius: 18,    
+      is_sprinkler_active: false, 
     }
   };
 
